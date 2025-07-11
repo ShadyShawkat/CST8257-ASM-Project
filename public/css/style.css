@@ -1,0 +1,10 @@
+/* Custom CSS goes here */
+
+a {
+    text-decoration: none;
+}
+
+/* footer font size */
+footer {
+    font-size: .875em;
+}
