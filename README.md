@@ -22,7 +22,7 @@
        </Directory>
 	</VirtualHost>
 	```
-4. Edit the your hosts file to point to your local machine and server name.
+4. Edit the your hosts file to point to your localhost and ServerName.
 5. Restart Apache if it's already running.
 6. In the public folder, create a `.htaccess` file and edit it to put the following:
 	```apache
