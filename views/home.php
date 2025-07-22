@@ -1,9 +1,11 @@
 <?php
+// Home.php
+// Home page view for the website.
 
 if (isset($_SESSION['loggedIn']))
 {
     $isLoggedIn = $_SESSION['loggedIn'];
-    $userName = $_SESSION['userName'];
+    $userName = $_SESSION['loggedName'];
 } 
 
 ?>

@@ -1,3 +1,8 @@
+<?php
+// footer.php
+// This file is included at the bottom of every page
+?>
+
 </main>
 
 <footer class="mt-auto">

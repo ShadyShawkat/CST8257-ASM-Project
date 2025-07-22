@@ -1,35 +1,33 @@
 <?php
-$userName = $_SESSION['userName'];
-$userId = trim($_SESSION['userID']);
+// uploadpictures.php
+// Handles picture uploads to albums
 
-$db = Database::getInstance();
-$conn = $db->getConnection();
+require_once './includes/functions.php';
+require_once './config/database.php';
+
+$userName = $_SESSION['loggedName'];
+$userId = trim($_SESSION['loggedID']);
 
 try
 {
-    $sql = "
-        SELECT Album_Id, Title
-        FROM Album
-        WHERE Owner_Id = ?;
-    ";
+    $db = Database::getInstance();
+    $conn = $db->getConnection();
 
-    $stmt = $conn->prepare($sql);
+    $sql = 'SELECT Album_Id, Title FROM Album WHERE Owner_Id = ?;';
 
-    $stmt->bind_param("s", $userId);
-    $stmt->execute();
+    $albums = $db->run($sql, [$userId])->fetchAll(PDO::FETCH_ASSOC);
 
-    $result = $stmt->get_result();
-
-    foreach ($result as $row)
+    foreach ($albums as $option)
     {
-        $selectOptions[$row['Album_Id']] = $row['Title'];
+        $selectOptions[$option['Album_Id']] = $option['Title'];
     }
 }
 catch (PDOException $e)
 {
-    echo "ERROR: " . $e->getMessage();
+    echo "ERROR ENCOUNTERED: " . $e->getMessage();
 }
 ?>
+
 <div class="container mt-2">
     <h1 class="h1 text-center">Upload Pictures</h1>
     <p>Accepted picture types JPG (JPEG), GIF, and PNG.</p>
@@ -42,9 +40,10 @@ catch (PDOException $e)
             <select class="form-select col-sm" name="albumname" id="albumname">
                 <option selected disabled hidden>Choose Album...</option>
                 <?php
-                    foreach($selectOptions as $value => $option) {
-                        echo '<option value="'. $value. '"> '. $option . '</option>';
-                    }
+                foreach ($selectOptions as $value => $option)
+                {
+                    echo '<option value="' . $value . '"> ' . $option . '</option>';
+                }
                 ?>
             </select>
         </div>

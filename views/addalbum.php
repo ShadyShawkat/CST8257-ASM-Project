@@ -1,24 +1,14 @@
 <?php
-// I'm thinking of refactoring this part as its needed more than once
-// Get the accessbility options from the database for the dropdown
-$db = Database::getInstance();
-$conn = $db->getConnection();
+// addalbum.php
+// File to add a new album/s 
 
-try
+require_once './includes/functions.php';
+require_once './config/database.php';
+
+$accessibilityOptions = getAccessibilityOptions();
+foreach ($accessibilityOptions as $option)
 {
-    $stmt = $conn->prepare("SELECT Accessibility_Code, Description FROM Accessibility");
-    $stmt->execute();
-
-    $result = $stmt->get_result();
-
-    foreach ($result as $row)
-    {
-        $selectOptions[$row['Accessibility_Code']] = $row['Description'];
-    }
-}
-catch (PDOException $e)
-{
-    echo "ERROR: " . $e->getMessage();
+    $selectOptions[$option['Accessibility_Code']] = $option['Description'];
 }
 
 ?>

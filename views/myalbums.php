@@ -1,47 +1,21 @@
 <?php
+// myalbums.php
+// Handles the display of albums
 
-$userName = $_SESSION['userName'];
-$userId = trim($_SESSION['userID']);
+require_once './includes/functions.php';
+require_once './config/database.php';
 
-$db = Database::getInstance();
-$conn = $db->getConnection();
+$userName = $_SESSION['loggedName'];
+$userId = trim($_SESSION['loggedID']);
 
-try
+$albums = getAlbumZZ($userId);
+
+var_dump($albums);
+
+$accessibilityOptions = getAccessibilityOptions();
+foreach ($accessibilityOptions as $option)
 {
-    $sql = "
-        SELECT
-            A.Title,
-            A.Date_Updated,
-            COUNT(P.Picture_Id),
-            Ac.Description
-        FROM
-            Album AS A
-        LEFT JOIN
-            Picture AS P ON A.Album_Id = P.Album_Id
-        JOIN
-            Accessibility AS Ac ON A.Accessibility_Code = Ac.Accessibility_Code
-        WHERE A.Owner_Id = ?
-        GROUP BY
-        A.Album_Id, A.Title, A.Date_Updated, Ac.Description;
-    ";
-
-    $stmt = $conn->prepare($sql);
-
-    $stmt->bind_param("s", $userId);
-    $stmt->execute();
-
-    $result = $stmt->get_result();
-
-    $albums = [];
-
-    foreach ($result as $album)
-    {
-        array_push($albums, $album);
-    }
-}
-catch (PDOException $e)
-{
-    echo "ERROR: " . $e->getMessage();
+    $selectOptions[$option['Accessibility_Code']] = $option['Description'];
 }
 
 ?>
@@ -59,32 +33,61 @@ catch (PDOException $e)
     ?>
 
     <a href="/addalbum">Create a New Album</a>
-    <table class="table">
-        <thead>
-            <th>Title</th>
-            <th>Date Updated</th>
-            <th>Number of Pictures</th>
-            <th>Accessibility</th>
-            <th></th>
-        </thead>
-        <tbody>
-            <?php
-            $cols = count($albums[0]);
+    <form method="post">
+        <table class="table">
+            <thead>
+                <th>Title</th>
+                <th>Date Updated</th>
+                <th>Number of Pictures</th>
+                <th>Accessibility</th>
+                <th></th>
+            </thead>
+            <tbody>
+                <?php
+                $cols = count($albums[0]);
 
-            for ($row = 0; $row < count($albums); $row++)
-            {
-                echo "<tr>";
-
-                foreach ($albums[$row] as $key => $value)
+                for ($row = 0; $row < count($albums); $row++)
                 {
-                    echo "<td>$value</td>";
+                    echo "<tr>";
+
+                    foreach ($albums[$row] as $key => $value)
+                    {
+                        if ($key == 'Album_Id')
+                        {
+                            continue;
+                        }
+
+                        if ($key == 'Title') {
+                            echo "<td><a href='mypictures?albumId=" . $albums[$row]['Album_Id'] . "'>";
+                            echo htmlspecialchars($value);
+                            echo "</a></td>";
+                        }
+
+                        // /echo "<td>$value</td>";
+                        if ($key == 'Accessibility_Code')
+                        {
+                            echo "<td><select class='form-select'>";
+                            foreach ($selectOptions as $code => $description)
+                            {
+                                $selected = ($code == $value) ? 'selected' : '';
+                                echo "<option value='$code' $selected>$description</option>";
+                            }
+                            echo "</select></td>";
+                        }
+                        else
+                        {
+                            echo "<td>$value</td>";
+                        }
+                    }
+
+                    echo "<td>Delete</td>";
+                    echo "</tr>";
                 }
-
-                echo "<td>Delete</td>";
-                echo "</tr>";
-            }
-
-            ?>
-        </tbody>
-    </table>
+                ?>
+            </tbody>
+        </table>
+        <div class="form-group">
+            <input type="submit" class="btn btn-primary" value="Save Changes">
+        </div>
+    </form>
 </div>
