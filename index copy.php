@@ -1,4 +1,4 @@
-<?php
+e<?php
 // index.php
 // Main entry point
 
@@ -7,19 +7,12 @@ define('BASE_PATH', __DIR__);
 
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $page = substr($requestUri, 5);
-// $page = $requestUri;
-
-echo $requestUri;
 
 // $page = '/' .$page;
 // echo $requestUri . "<br><br>";
-// echo BASE_PATH . "<br>" . $page;
-// echo $requestUri;
-// echo "<br><br>";
-// echo $_SERVER['SCRIPT_NAME'];
-// echo $_SERVER['SCRIPT_NAME'];
+echo BASE_PATH;
 
-// $rootAliases = ["", "/", "home", "index"];
+$rootAliases = ["", "/", "home", "index"];
 
 $regularPages = [
     "myfriends" => "My Friends",
@@ -40,7 +33,7 @@ $specialPages = [
 $allRoutablePages = array_merge($regularPages, $specialPages);
 
 // // Handle routing for the root
-if ($requestUri === '/asm/' || $page === 'index' || $page === 'home')
+if ($requestUri === '/' || $page === 'index' || $page === 'home')
 {
     unset($pageTitle);
     $body = BASE_PATH . '/views/home.php';
@@ -51,7 +44,7 @@ else
     if (array_key_exists($page, $allRoutablePages))
     {
         $pageTitle = $allRoutablePages[$page];
-        $body = BASE_PATH . '/views/' . $page . '.php';
+        $body = BASE_PATH . '/views' . $page . '.php';
         // echo 'if' . $page;
     }
     else
@@ -60,15 +53,19 @@ else
         header("HTTP/1.0 404 Not Found");
         $pageTitle = "Page Not Found";
         $body = BASE_PATH . '/404.php';
-        //     echo 'else should show 404';
+    //     echo 'else should show 404';
     }
 }
 
 // Add the header
 include_once BASE_PATH . '/includes/header.php';
 
-// Add the menu to regular pages
-include_once BASE_PATH . '/includes/menu.php';
+// Add the menu if its in any of the homepage alias or the regular pages
+if (in_array($page, $rootAliases) or array_key_exists($page, $regularPages))
+{
+    // Add the menu to regular pages
+    include_once BASE_PATH . '/includes/menu.php';
+}
 
 // Include the body content
 if (file_exists($body))
@@ -77,7 +74,10 @@ if (file_exists($body))
 }
 else
 {
-    echo "404";
+    // Endpoint do not exist
+    header("HTTP/1.0 404 Not Found");
+    $pageTitle = "Page Not Found";
+    include_once BASE_PATH . '/404.php'; // Fallback to 404 if view is missing
 }
 
 // Add the footer

@@ -12,15 +12,15 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a class="nav-item nav-link" href="/">Home</a>
-                    <a class="nav-item nav-link" href="/myfriends">My Friends</a>
-                    <a class="nav-item nav-link" href="/myalbums">My Albums</a>
-                    <a class="nav-item nav-link" href="/mypictures">My Pictures</a>
-                    <a class="nav-item nav-link" href="/uploadpictures">Upload Pictures</a>
+                    <a class="nav-item nav-link" href="index">Home</a>
+                    <a class="nav-item nav-link" href="myfriends">My Friends</a>
+                    <a class="nav-item nav-link" href="myalbums">My Albums</a>
+                    <a class="nav-item nav-link" href="mypictures">My Pictures</a>
+                    <a class="nav-item nav-link" href="uploadpictures">Upload Pictures</a>
                     <?php if (isset($_SESSION['loggedIn'])) : ?>
-                        <a class="nav-item nav-link" href="/logout">Log Out</a>
+                        <a class="nav-item nav-link" href="logout">Log Out</a>
                     <?php else: ?>
-                        <a class="nav-item nav-link" href="/login">Log In</a>
+                        <a class="nav-item nav-link" href="login">Log In</a>
                     <?php endif; ?>
                 </div>
             </div>
