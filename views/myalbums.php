@@ -8,14 +8,49 @@ require_once './config/database.php';
 $userName = $_SESSION['loggedName'];
 $userId = trim($_SESSION['loggedID']);
 
-$albums = getAlbumZZ($userId);
+// Get all albums
+$albums = getAlbums($userId);
 
-var_dump($albums);
+foreach ($albums as $album)
+{
+    $currentAlbumsInfo[$album['Album_Id']] = $album['Accessibility_Code'];
+}
 
 $accessibilityOptions = getAccessibilityOptions();
-foreach ($accessibilityOptions as $option)
+foreach ($accessibilityOptions as $option) $selectOptions[$option['Accessibility_Code']] = $option['Description'];
+
+if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
-    $selectOptions[$option['Accessibility_Code']] = $option['Description'];
+    foreach ($_POST['albumId'] as $key => $value)
+    {
+        $newAlbumsInfo[$value] = $_POST['accessibilityCode'][$key];
+    }
+
+    foreach ($currentAlbumsInfo as $albumId => $accessCode)
+    {
+        if (array_key_exists($albumId, $newAlbumsInfo))
+        {
+            if ($currentAlbumsInfo[$albumId] !== $newAlbumsInfo[$albumId])
+            {
+                changeAccessibilityOptions($albumId, $newAlbumsInfo[$albumId]);
+            }
+        }
+    }
+
+
+
+    // foreach($newAlbumInfo as $albumInfo) {
+    //     var_dump($albumInfo);
+    // }
+
+    // foreach ($albumIds as $key => $value)
+    // {
+    //     if(array_key_exists($key, $currentAlbumsInfo)) {
+    //         if ($currentAlbumsInfo[$value] !== $albumAccessCodes[$key]) {
+    //             changeAccessibilityOptions($value, $albumAccessCodes[$key]);
+    //         }
+    //     }   
+    // }
 }
 
 ?>
@@ -25,11 +60,7 @@ foreach ($accessibilityOptions as $option)
 
     <?php
     // Display message to logged in user
-    if (isset($userName))
-    {
-        loggedInMsg($userName);
-    }
-
+    if (isset($userName)) loggedInMsg($userName);
     ?>
 
     <a href="/addalbum">Create a New Album</a>
@@ -52,31 +83,42 @@ foreach ($accessibilityOptions as $option)
 
                     foreach ($albums[$row] as $key => $value)
                     {
+
                         if ($key == 'Album_Id')
                         {
+                            $albumId = $albums[$row]['Album_Id'];
                             continue;
                         }
 
-                        if ($key == 'Title') {
-                            echo "<td><a href='mypictures?albumId=" . $albums[$row]['Album_Id'] . "'>";
-                            echo htmlspecialchars($value);
-                            echo "</a></td>";
+                        if ($key == 'Title')
+                        {
+                            echo "<td><a href='mypictures?albumId=" . $albumId . "'>";
+                            echo $value;
+                            echo "</a>";
+                            echo "<input type='hidden' name='albumId[]' value='$albumId'";
+                            echo "</td>";
                         }
 
-                        // /echo "<td>$value</td>";
+                        if ($key == 'Date_Updated')
+                        {
+                            echo "<td>$value</td>";
+                        }
+
+                        if ($key == 'Number_Of_Pictures')
+                        {
+                            echo "<td>$value</td>";
+                        }
+
+                        // // /echo "<td>$value</td>";
                         if ($key == 'Accessibility_Code')
                         {
-                            echo "<td><select class='form-select'>";
+                            echo "<td><select name='accessibilityCode[]' class='form-select'>";
                             foreach ($selectOptions as $code => $description)
                             {
                                 $selected = ($code == $value) ? 'selected' : '';
                                 echo "<option value='$code' $selected>$description</option>";
                             }
                             echo "</select></td>";
-                        }
-                        else
-                        {
-                            echo "<td>$value</td>";
                         }
                     }
 
@@ -86,8 +128,13 @@ foreach ($accessibilityOptions as $option)
                 ?>
             </tbody>
         </table>
-        <div class="form-group">
-            <input type="submit" class="btn btn-primary" value="Save Changes">
+        <div class="row">
+            <div class="col">
+                <span class="text-">Message here</span>
+            </div>
+            <div class="form-group col">
+                <input type="submit" class="btn btn-primary w-75" value="Save Changes">
+            </div>
         </div>
     </form>
 </div>

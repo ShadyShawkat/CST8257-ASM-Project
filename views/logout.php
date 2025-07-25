@@ -1,4 +1,6 @@
 <?php
+// lougout.php
+// Page handling user logouts
 
 if ($_SESSION['loggedIn'])
 {

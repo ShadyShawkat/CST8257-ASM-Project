@@ -1,8 +1,11 @@
 # CST8257 Final Project
 
+## PHP ENVIRONMENT SETUP ##
+1. Since has file uploads, make sure to set the **file_uploads** line is set to **on** in your **php.ini**.
+
 ## LOCALHOST SETUP: ##
 1. Install your preferred web development stack. I'm using **XAMPP** for this
-2. If you want to use your URL instead of http://localhost, edit `httpd.conf` look for the line like:
+2. If you want to use your URL instead of http://localhost, edit **httpd.conf** look for the line like:
    ```apache
    #Include conf/extra/httpd-vhosts.conf
    ```
@@ -28,3 +31,9 @@
 ## DATABASE SETUP: ##
 
 I included an SQL file (ASM.SQL) to create the schema and some sample data. You can use your preferred SQL editor to take a look, modify, and run it.
+
+## TODO: ##
+
+List of things that we still need to do.
+- [ ] Error validation. Sitewide.
+- [ ] Footer overlaps with the content when browser is resized.

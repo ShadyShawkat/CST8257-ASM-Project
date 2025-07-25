@@ -1,6 +1,6 @@
 <?php
 // addalbum.php
-// File to add a new album/s 
+// Page handing creating of new album/s 
 
 require_once './includes/functions.php';
 require_once './config/database.php';

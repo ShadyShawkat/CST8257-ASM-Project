@@ -1,14 +1,12 @@
 <?php
 // 404.php
 // For endpoints the do not exist or not found
-
-include_once  './includes/header.php';
 ?>
 
 <body class="vh-100 align-content-center">
     <div class="container text-center">
         <header class="row">
-            <a class="" href="/"><img src="/images/aclogo.png" width="100px"></a>
+            <a class="" href="/"><img src="/assets/images/aclogo.png" width="100px"></a>
             <h1 class="h1 mb-5">Algonquin Social Media</h1>
         </header>
         <main class="row mb-3">
@@ -17,6 +15,3 @@ include_once  './includes/header.php';
             <p>You can try going back to the <a href="/">homepage</a>.</p>
         </main>
     </div>
-
-<?php
-include_once './includes/footer.php';

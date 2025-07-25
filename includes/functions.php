@@ -1,6 +1,17 @@
 <?php
-// fuctions.php
+// functions.php
 // Contains the various functions for the entire website.
+
+// Function to show a friendly error message
+function displayError(string $message, string $title = 'ERROR')
+{
+    $html = '<div class="m-2 alert alert-danger alert-dismissible fade show" id="errMessage" role="alert">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"><path d="M479.56-254Q507-254 526-272.56q19-18.56 19-46t-18.56-46.94q-18.56-19.5-46-19.5T434-365.71q-19 19.29-19 46.73 0 27.44 18.56 46.21t46 18.77ZM421-430h118v-263H421v263Zm59.28 368Q393-62 317.01-94.58q-75.98-32.59-132.91-89.52-56.93-56.93-89.52-132.87Q62-392.92 62-480.46t32.58-163.03q32.59-75.48 89.52-132.41 56.93-56.93 132.87-89.52Q392.92-898 480.46-898t163.03 32.58q75.48 32.59 132.41 89.52 56.93 56.93 89.52 132.64Q898-567.55 898-480.28q0 87.28-32.58 163.27-32.59 75.98-89.52 132.91-56.93 56.93-132.64 89.52Q567.55-62 480.28-62Z"/></svg>
+                <strong>' . $title . ' : </strong>' . $message . '
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>';
+    echo $html;
+}
 
 // Function to log user in
 function logIn($userName, $password)
@@ -10,7 +21,7 @@ function logIn($userName, $password)
     // If needed fields are empty, return an error
     if (!isset($userName) or !isset($password) or empty($userName) or empty($password))
     {
-        return ["error" => "Username and password required."];
+        displayError("Username and password required.");
     }
     else
     {
@@ -36,17 +47,17 @@ function logIn($userName, $password)
                 }
                 else
                 {
-                    return ["error" => "Invalid username and/or password."];
+                    displayError("Invalid username and/or password.");
                 }
             }
             else
             {
-                return ["error" => "Invalid username and/or password."];
+                displayError("Invalid username and/or password.");
             }
         }
         catch (PDOException $e)
         {
-            return "Error encountered: " . $e;
+            displayError($e->getMessage());
         }
     }
 }
@@ -60,15 +71,14 @@ function loggedInMsg($userName)
     }
 }
 
-// Working on this
-function getAlbumZZ($userId)
+// Function to get albums by user id from the database
+function getAlbums($userId)
 {
     require_once './config/database.php';
 
     try
     {
-        $sql = "
-            SELECT
+        $sql = 'SELECT
                 Album.Album_Id,
                 Album.Title,
                 Album.Date_Updated,
@@ -78,8 +88,7 @@ function getAlbumZZ($userId)
             LEFT JOIN Picture ON Album.Album_Id = Picture.Album_Id
             JOIN Accessibility ON Album.Accessibility_Code = Accessibility.Accessibility_Code
             WHERE Album.Owner_Id = ?
-            GROUP BY Album.Album_Id, Album.Title, Album.Date_Updated, Accessibility.Description;
-        ";
+            GROUP BY Album.Album_Id, Album.Title, Album.Date_Updated, Accessibility.Description;';
 
 
         $db = Database::getInstance();
@@ -94,35 +103,31 @@ function getAlbumZZ($userId)
     }
     catch (PDOException $e)
     {
-        return "Error encountered: " . $e;
+        displayError($e->getMessage());
     }
 }
 
-
-function getAlbums($userId)
+function changeAccessibilityOptions($albumId, $option)
 {
     require_once './config/database.php';
 
     try
     {
-        $sql = "SELECT * FROM Album WHERE Album.Owner_ID = ?";
+        $sql = 'UPDATE Album SET Accessibility_Code = ? WHERE Album_Id = ?';
 
         $db = Database::getInstance();
-        $albums = $db->run($sql, [$userId])->fetchAll();
+        $result = $db->run($sql, [$option, $albumId])->fetchAll();
 
         // Query successful
-        if ($albums)
-        {
-            return $albums;
-        }
-        else
-        {
-            return "No album found.";
-        }
+        return $result;
+        // else
+        // {
+        //     displayError($e->getMessage());
+        // }
     }
     catch (PDOException $e)
     {
-        return "Error encountered: " . $e;
+        displayError($e->getMessage());
     }
 }
 
@@ -145,12 +150,12 @@ function getAccessibilityOptions()
         }
         else
         {
-            return "No accessibility options found.";
+            displayError("No accessibility options found");
         }
     }
     catch (PDOException $e)
     {
-        return "Error encountered: " . $e;
+        displayError($e->getMessage());
     }
 }
 
@@ -158,7 +163,7 @@ function getAccessibilityOptions()
 function getPictures($albumId)
 {
     require_once './config/database.php';
-    
+
     try
     {
         $sql = 'SELECT * FROM Picture WHERE Album_Id = ?';
@@ -178,14 +183,14 @@ function getPictures($albumId)
     }
     catch (PDOException $e)
     {
-        return "Error encountered: " . $e;
+        displayError($e->getMessage());
     }
 }
 
 function getComments($pictureId)
 {
     require_once './config/database.php';
-    
+
     try
     {
         $sql = 'SELECT * FROM Comment WHERE Picture_Id = ?';

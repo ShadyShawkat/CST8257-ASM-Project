@@ -83,6 +83,9 @@ foreach ($albums as $option)
             </div>
         </div>
         <div class="col">
+            <div id="imageDescription">
+                Description goes here.
+            </div>
             <div style="overflow-y:scroll;">
                 Comments area. List of comments go here with a comment box at the bottom
             </div>

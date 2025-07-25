@@ -28,7 +28,7 @@ $specialPages = [
 // Combine all routable pages
 $allRoutablePages = array_merge($regularPages, $specialPages);
 
-// Handle the root
+// Handle routing for the root
 if ($requestUri === '/' || $page === 'index' || $page === 'home')
 {
     unset($pageTitle);
@@ -37,15 +37,10 @@ if ($requestUri === '/' || $page === 'index' || $page === 'home')
 else
 {
     // Check if the requested page exists in our routable pages
-    if (array_key_exists($page, $regularPages))
+    if (array_key_exists($page, $allRoutablePages))
     {
-        $pageTitle = $regularPages[$page];
+        $pageTitle = $allRoutablePages[$page];
         $body = BASE_PATH . '/views/' . $page . '.php';
-    }
-    elseif (array_key_exists($page, $specialPages))
-    {
-        $pageTitle = $specialPages[$page];
-        $body = BASE_PATH . '/' . $page . '.php';
     }
     else
     {
