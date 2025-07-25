@@ -1,17 +1,7 @@
-<!DOCTYPE html>
-<html lang="en" class="h-100">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Gamaliel Cabana">
-    <meta name="email" content="90541124989@algonquincdistudent.ca">
-
-    <title>Algonquin Social Media - Sign Up</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <link rel="stylesheet" href="/css/style.css">
-</head>
+<?php
+// signup.php
+// Handles user sign up
+?>
 
 <body class="d-flex flex-column h-100">
     <main class="d-flex flex-column container-fluid main-content h-100 justify-content-center align-items-center">
@@ -52,7 +42,3 @@
             <a href="/">&larr; Go to Home</a>
         </div>
     </main>
-
-<?php
-
-include_once __DIR__ . '/../includes/footer.php';

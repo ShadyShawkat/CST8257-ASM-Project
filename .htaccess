@@ -1,0 +1,17 @@
+# htaccess for the root folder
+# ----------------------------
+
+# Disable directory listing
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Serve actual files/directories directly (for static assets like CSS, JS, images)
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Route all other requests to index.php
+    RewriteRule ^ index.php [L,QSA]
+</IfModule>

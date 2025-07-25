@@ -1,0 +1,11 @@
+# htaccess for the views folder
+# -----------------------------
+
+# Do not allow directory listing
+Options -Indexes
+
+# Do not allow direct access to ANY php files
+<Files "*.php">
+    Order Allow,Deny
+    Deny from all
+</Files>

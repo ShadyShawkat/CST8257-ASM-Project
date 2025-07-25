@@ -1,54 +1,65 @@
 <?php
+// database.php
+// Contains the Database class
 
-// PHP file containing the database configuration
-
-// Use singleton database connection for real world scenario
-// REFERENCES: 
-// https://dev.to/websilvercraft/implementing-singletons-in-php-using-classes-or-functions-23mh
-// https://medium.com/@bandarans2000/singleton-design-pattern-in-php-a-practical-guide-with-database-connection-example-b35adfade4ec
-
-define('APP_SERVER', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'CST8257');
-
+// Reference: https://phpdelusions.net/pdo/pdo_wrapper 
+// Switched from mysqli to PDO
 class Database
 {
-    // Store the single instance
+    public $pdo;
     private static ?Database $instance = null;
-    
-    // Database connection object
-    private mysqli $connection;
 
-    // Private constructor to prevent direct instantiation
-    private function __construct()
+    public function __construct()
     {
-        $this->connection = new mysqli(
-            APP_SERVER,
-            DB_USER,
-            DB_PASS,
-            DB_NAME,
-            // '3308'
-        );
+        $db = parse_ini_file('database.ini');
 
-        if ($this -> connection -> connect_error) {
-            die("Connection failed: " . $this -> connection -> connect_error);
+        $dbHost = $db['host'];
+        $dbName = $db['dbname'];
+        $dbUser = $db['username'];
+        $dbPass = $db['password'];
+        $dbPort = $db['port'];
+        $dbCharset = $db['charset'];
+
+        $options = [
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        ];
+
+        $dsn = "mysql:host=$dbHost;dbname=$dbName;port=$dbPort;charset=$dbCharset";
+
+        try
+        {
+            $this->pdo = new \PDO($dsn, $dbUser, $dbPass, $options);
+        }
+        catch (\PDOException $e)
+        {
+            throw new \PDOException($e->getMessage(), (int)$e->getCode());
         }
     }
 
-    // The method to get the singleton instance
+    // Get the instance of the Database. If there's none, create one.
     public static function getInstance(): ?Database
     {
-        if (self::$instance === null) {
+        if (self::$instance === null)
+        {
             self::$instance = new Database();
         }
 
         return self::$instance;
     }
 
-    // Get the database connection
-    public function getConnection(): mysqli
+    // Get the database connection.
+    public function getConnection(): PDO
     {
-        return $this -> connection;
+        return $this->pdo;
+    }
+
+    // Simplified prepare execute
+    public function run($sql, $args = NULL)
+    {
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($args);
+        return $stmt;
     }
 }

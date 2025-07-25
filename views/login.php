@@ -1,13 +1,11 @@
 <?php
+// login.php
+// Page handling user logins
 
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../includes/functions.php';
+require_once BASE_PATH . '/config/database.php';
 
 // Start session
-if (session_id() == '' || !isset($_SESSION) || session_status() === PHP_SESSION_NONE)
-{
-    session_start();
-}
+if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
@@ -17,27 +15,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     logIn('user001', 'pass123');
     // logIn($userid, $password);
 
-    if($_SESSION['loggedIn'] === true) header('Location: /');
+    if (isset($_SESSION['loggedIn'])) $loggedInFlag = $_SESSION['loggedIn'];
+
+    if (isset($loggedInFlag) and $loggedInFlag === true) header('Location: /');
 }
 
 ?>
 
-<!DOCTYPE html>
-<html lang="en" class="h-100">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Gamaliel Cabana">
-    <meta name="email" content="90541124989@algonquincdistudent.ca">
-
-    <title>Algonquin Social Media - Log In</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-
 <body class="d-flex flex-column h-100">
+    <pre>TESTING MODE. Clicking login without username and password will log in with user001</pre>
     <main class="d-flex flex-column container-fluid main-content h-100 justify-content-center align-items-center">
         <div class="container-sm p-4 border rounded" style="width:576px;">
             <h1 class="text-center">Log In</h1>
@@ -64,7 +50,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             <a href="/">&larr; Go to Home</a>
         </div>
     </main>
-
-    <?php
-
-    include_once __DIR__ . '/../includes/footer.php';
