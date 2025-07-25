@@ -6,20 +6,19 @@
 define('BASE_PATH', __DIR__);
 
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$page = substr($requestUri, 5);
-// $page = $requestUri;
+$trimmedUri = trim($requestUri, '/');
+$splitUri = explode('/', $trimmedUri);
 
-echo $requestUri;
+$page = end($splitUri);
 
-// $page = '/' .$page;
-// echo $requestUri . "<br><br>";
-// echo BASE_PATH . "<br>" . $page;
-// echo $requestUri;
-// echo "<br><br>";
-// echo $_SERVER['SCRIPT_NAME'];
-// echo $_SERVER['SCRIPT_NAME'];
+// To check check the routing
+// echo "ROOT FOLDER : ".BASE_PATH  . "<br>";
+// echo "RAW REQUEST URI : ". $_SERVER["REQUEST_URI"] . "<br>";
+// echo "PARSED REQUEST URI : ". $requestUri . "<br>";
+// echo "SCRIPT NAME : ".  $_SERVER['SCRIPT_NAME'] . "<br>";
+// echo "PAGE : " . $page;
 
-// $rootAliases = ["", "/", "home", "index"];
+$rootAliases = ["", "/", "home", "index"];
 
 $regularPages = [
     "myfriends" => "My Friends",
@@ -39,11 +38,12 @@ $specialPages = [
 // Combine all routable pages
 $allRoutablePages = array_merge($regularPages, $specialPages);
 
-// // Handle routing for the root
-if ($requestUri === '/asm/' || $page === 'index' || $page === 'home')
+// Handle routing for the hompage
+if ($page === "" || $page === 'index' || $page === 'home' || $page === 'asm')
 {
     unset($pageTitle);
     $body = BASE_PATH . '/views/home.php';
+
 }
 else
 {
@@ -52,7 +52,6 @@ else
     {
         $pageTitle = $allRoutablePages[$page];
         $body = BASE_PATH . '/views/' . $page . '.php';
-        // echo 'if' . $page;
     }
     else
     {
@@ -60,15 +59,18 @@ else
         header("HTTP/1.0 404 Not Found");
         $pageTitle = "Page Not Found";
         $body = BASE_PATH . '/404.php';
-        //     echo 'else should show 404';
     }
 }
 
 // Add the header
 include_once BASE_PATH . '/includes/header.php';
 
-// Add the menu to regular pages
-include_once BASE_PATH . '/includes/menu.php';
+// Add the menu if its in any of the homepage alias or the regular pages
+if (in_array($page, $rootAliases) or array_key_exists($page, $regularPages))
+{
+    // Add the menu to regular pages
+    include_once BASE_PATH . '/includes/menu.php';
+}
 
 // Include the body content
 if (file_exists($body))
@@ -77,7 +79,10 @@ if (file_exists($body))
 }
 else
 {
-    echo "404";
+    // Endpoint do not exist
+    header("HTTP/1.0 404 Not Found");
+    $pageTitle = "Page Not Found";
+    include_once BASE_PATH . '/404.php'; // Fallback to 404 if view is missing
 }
 
 // Add the footer

@@ -39,6 +39,6 @@
             </form>
         </div>
         <div class="text-center mt-2">
-            <a href="/">&larr; Go to Home</a>
+            <a href="index">&larr; Go to Home</a>
         </div>
     </main>

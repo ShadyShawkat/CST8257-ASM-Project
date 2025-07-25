@@ -63,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     if (isset($userName)) loggedInMsg($userName);
     ?>
 
-    <a href="/addalbum">Create a New Album</a>
+    <a href="addalbum">Create a New Album</a>
     <form method="post">
         <table class="table">
             <thead>

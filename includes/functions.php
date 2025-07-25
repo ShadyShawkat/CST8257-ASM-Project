@@ -67,7 +67,7 @@ function loggedInMsg($userName)
 {
     if (isset($userName))
     {
-        echo '<p>Welcome <span class="fw-bold">' . $userName . '</span>! (not you? change user <a href="/login">here</a>)</p>';
+        echo '<p>Welcome <span class="fw-bold">' . $userName . '</span>! (not you? change user <a href="login">here</a>)</p>';
     }
 }
 

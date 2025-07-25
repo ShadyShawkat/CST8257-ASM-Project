@@ -1,5 +1,8 @@
 # CST8257 Final Project
 
+## FOLDER SETUP
+On this project, we are assuming that the entire website is put in its folder inside the XAMPP htdocs folder. Example: C:\XAMPP\htdocs\ASM where ASM is the folder for the project. We also took into consideration if the website is just in htdocs.
+
 ## PHP ENVIRONMENT SETUP ##
 1. Since has file uploads, make sure to set the **file_uploads** line is set to **on** in your **php.ini**.
 

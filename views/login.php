@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 
     if (isset($_SESSION['loggedIn'])) $loggedInFlag = $_SESSION['loggedIn'];
 
-    if (isset($loggedInFlag) and $loggedInFlag === true) header('Location: /');
+    if (isset($loggedInFlag) and $loggedInFlag === true) header('Location: index');
 }
 
 ?>
@@ -47,6 +47,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             </form>
         </div>
         <div class="text-center mt-2">
-            <a href="/">&larr; Go to Home</a>
+            <a href="index">&larr; Go to Home</a>
         </div>
     </main>
