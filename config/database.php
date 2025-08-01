@@ -26,15 +26,15 @@ class Database
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         ];
 
-        $dsn = "mysql:host=$dbHost;dbname=$dbName;port=$dbPort;charset=$dbCharset";
+        $dsn = "mysql:host=$dbHost; dbname=$dbName; port=$dbPort; charset=$dbCharset";
 
         try
         {
-            $this->pdo = new \PDO($dsn, $dbUser, $dbPass, $options);
+            $this->pdo = new PDO($dsn, $dbUser, $dbPass, $options);
         }
-        catch (\PDOException $e)
+        catch (PDOException $e)
         {
-            throw new \PDOException($e->getMessage(), (int)$e->getCode());
+            throw new PDOException($e->getMessage(), (int)$e->getCode());
         }
     }
 

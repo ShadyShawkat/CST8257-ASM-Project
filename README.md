@@ -39,4 +39,8 @@ I included an SQL file (ASM.SQL) to create the schema and some sample data. You 
 
 List of things that we still need to do.
 - [ ] Error validation. Sitewide.
-- [ ] Footer overlaps with the content when browser is resized.
+- [X] Footer overlaps with the content when browser is resized.
+- [ ] Need to retain values when form is submitted and value is valid.
+- [ ] Update the album modified date whena picture is added.
+- [X] Find out why rendered footer elements are messed up.
+- [ ] Footer needs to stay at bottom. Not fixed

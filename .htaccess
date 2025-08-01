@@ -1,17 +1,48 @@
 # htaccess for the root folder
 # ----------------------------
 
-# Disable directory listing
+# # Disable directory listing
+# Options -Indexes
+
+# <IfModule mod_rewrite.c>
+#     RewriteEngine On
+
+#     # Exclude api from routing
+#     RewriteRule ^api/ - [L]
+
+#     # Serve actual files/directories directly (for static assets like CSS, JS, images)
+#     RewriteCond %{REQUEST_FILENAME} -f [OR]
+#     RewriteCond %{REQUEST_FILENAME} -d
+#     RewriteRule ^ - [L]
+
+#     # Route all other requests to index.php
+#     RewriteRule ^ index.php [L,QSA]
+
+#     RewriteRule ^(.*)$ index.php [L,QSA]
+# </IfModule>
+
 Options -Indexes
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Serve actual files/directories directly (for static assets like CSS, JS, images)
-    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    # If the request is for index.php itself, just serve it directly
+    # This prevents an infinite loop if index.php is the target
+    RewriteRule ^index\.php$ - [L]
+
+    # Exclude api folder from routing
+    RewriteRule ^api/ - [L]
+
+    # Serve actual non-PHP files/directories directly (for static assets like CSS, JS, images, but NOT PHP)
+    # Check if the request is for an existing file AND it's NOT a .php file
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteCond %{REQUEST_URI} !\.(php|html|htm)$ [NC] # Exclude PHP, HTML, HTM files from direct access
+    RewriteRule ^ - [L]
+
+    # Serve actual directories directly
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
 
-    # Route all other requests to index.php
-    RewriteRule ^ index.php [L,QSA]
+    # Route all other requests to index.php. Including files in the same folder.
+    RewriteRule ^(.*)$ index.php [L,QSA]
 </IfModule>

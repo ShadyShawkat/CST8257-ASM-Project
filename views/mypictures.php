@@ -3,55 +3,87 @@
 // Displays pictures from the user's albums
 
 require_once './includes/functions.php';
-require_once './config/database.php';
+require_once BASE_PATH . '/config/database.php';
 
 $userName = $_SESSION['loggedName'];
 $userId = trim($_SESSION['loggedID']);
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['albumId']))
+$commentError = "";
+$commentSuccess = "";
+
+// placeholder image
+$placeholder = BASE_URL . 'assets' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'Placeholder.svg';
+
+// Get all the current user's albums for the dropdown
+$albums = getAlbums($userId);
+
+if (isset($albums) and !is_null($albums))
 {
-    $albumId = $_GET['albumId'];
-    $result = getPictures($albumId);
+    // Load the select
+    foreach ($albums as $option)
+    {
+        $albumId = $option['Album_Id'];
+        $albumTitle = $option['Title'];
+        $dateUpdated = $option['Date_Updated'];
+        $selectOptions[$albumId] = $albumTitle . ' - updated on ' . $dateUpdated;
+    }
+
+    // If there is a albumId from url get it
+    if (isset($_GET['albumId']))
+    {
+        $getAlbum = trim($_GET['albumId']);
+
+        foreach ($albums as $album)
+        {
+            if ($album['Album_Id'] == $getAlbum)
+            {
+                $albumDisplay = $album;
+                break;
+            }
+        }
+    }
+    // Otherwise just get use  first album
+    else
+    {
+        $albumDisplay = $albums[0];
+    }
+
+    // Load the album and first picture
+    $picturesList = getPictures($albumDisplay['Album_Id']);
+
+    if (is_array($picturesList))
+    {
+        // var_dump($picturesList);
+
+        $pictureId = $picturesList[0]['Picture_Id'];
+        $pictureTitle = $picturesList[0]['Title'];
+        $pictureDescription = $picturesList[0]['Description'];
+        $mainImage = '.' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $userId . DIRECTORY_SEPARATOR . $picturesList[0]['Album_Id'] . DIRECTORY_SEPARATOR . $picturesList[0]['FileName'];
+
+        $commentsList = getComments($pictureId);
+    }
 }
 
-// Experiment
-$db = Database::getInstance();
-$sql = "SELECT
-    Album.Title,
-    Album.Description,
-    Album.Date_Updated,
-    Picture.FileName,
-    Picture.Title AS Picture_Title,
-    Picture.Description AS Picture_Description,
-    Picture.Date_Added,
-    Comment.Comment_Text,
-    Comment.Date,
-    User.Name
-FROM
-    Album
-JOIN
-    Picture ON Album.Album_Id = Picture.Album_Id
-LEFT JOIN
-    Comment ON Picture.Picture_Id = Comment.Picture_Id
-LEFT JOIN
-    User ON Comment.Author_Id = User.UserId
-WHERE
-    Album.Owner_Id = ?
-ORDER BY
-    Album.Title ASC,
-    Picture.Title ASC,
-    Comment.Date ASC;";
-
-$pictures = $db->run($sql, [$userId])->fetchAll();
-// End experiment
-
-$albums = getAlbums($userId);
-foreach ($albums as $option)
+if ($_SERVER['REQUEST_METHOD'] === 'POST')
 {
-    $albumId = $option['Album_Id'];
-    $albumTitle = $option['Title'];
-    $dateUpdated = $option['Date_Updated'];
-    $selectOptions[$albumId] = $albumTitle . ' - updated on ' . $dateUpdated;
+    if (empty($_POST['pictureId']))
+    {
+        $commentError = "You cannot comment on a non-existing picture.";
+    }
+    elseif (empty($_POST['commentArea']))
+    {
+        $commentError = "Comment is blank.";
+    }
+    else
+    {
+        $pictureId = $_POST['pictureId'];
+        $comment = $_POST['commentArea'];
+
+        // $addedComment = addComment($userId, $pictureId, $comment);
+        $commentSuccess = "Comment added.";
+
+        header('Location: mypictures');
+    }
 }
 
 ?>
@@ -60,67 +92,92 @@ foreach ($albums as $option)
     <h1 class="h1 text-center">My Pictures</h1>
 
     <div class="row">
-        <div class="col">
-            <span name="picturetitle" id="picturetitle">Picture Title Goes Here</span>
-            <form method="get" id="picturelist">
+        <div class="col-8">
+            <form name="picturedropdown" id="picturedropdown" method="get">
                 <select class="form-select col-sm" name="albumselect" id="albumselect">
                     <?php
-                    foreach ($selectOptions as $value => $option)
+                    if (isset($albums) and !is_null($albums))
                     {
-                        echo '<option value="' . $value . '"> ' . $option . '</option>';
+                        $firstOption = true;
+
+                        foreach ($selectOptions as $value => $option)
+                        {
+                            if ((isset($_GET['albumId']) and $_GET['albumId'] == $value) or $firstOption === true)
+                            {
+                                $firstOption = false;
+                                $selected = 'selected';
+                            }
+                            else
+                            {
+                                $selected = '';
+                            }
+                            echo '<option value="' . $value . '" ' . $selected . '> ' . $option . '</option>';
+                        }
+                    }
+                    else
+                    {
+                        echo "<option hidden disabled selected>No albums found</option>";
                     }
                     ?>
                 </select>
             </form>
-            <div id="albumContent"></div>
-            <div>
-                <?php
-                foreach ($result as $picture)
-                {
-                    echo "<p>{$picture['Title']} - {$picture['FileName']}</p>";
-                }
-                ?>
-            </div>
+            <h3 class="h3 text-center my-2" name="picturetitle" id="picturetitle"><?php echo isset($pictureTitle) ? $pictureTitle : " "; ?></h3>
         </div>
-        <div class="col">
-            <div id="imageDescription">
-                Description goes here.
+    </div>
+    <div class="row">
+        <div class="col col-8" id="pictureGallery" name="pictureGallery">
+            <?php if (isset($albums) and !is_null($albums)) : ?>
+                <div class="row" id="pictureMain" name="pictureMain">
+                    <img id="mainImage" src="<?php echo isset($mainImage) ? $mainImage : $placeholder; ?>" data-id="<?php echo isset($pictureId) ? $pictureId : ''; ?>">
+                </div>
+                <div class="row" id="picturethumbs" name="picturethumbs">
+                    <ul>
+                        <?php if (isset($picturesList) and is_array($picturesList)) :
+                            foreach ($picturesList as $picture) :
+                                $pictureSource = '.' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $userId . DIRECTORY_SEPARATOR . $picture['Album_Id'] . DIRECTORY_SEPARATOR . $picture['FileName'];
+                        ?>
+                                <li><img class="thumbnails" id="<?php echo $picture['Picture_Id'] ?>" src="<?php echo $pictureSource ?>" data-fullsize="<?php echo $pictureSource ?>"></li>
+                        <?php endforeach;
+                        endif; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <div class="col-4" id="rCol" name="rCol">
+            <?php if (isset($albums) and !is_null($albums)): ?>
+            <div class="mb-2">
+                <p class="fw-bold">Description: </p>
+                <div id="pictureDescription">
+                    <p><?php echo (isset($pictureDescription) and !empty($pictureDescription)) ? $pictureDescription : "No description set."; ?></p>
+                </div>
             </div>
-            <div style="overflow-y:scroll;">
-                Comments area. List of comments go here with a comment box at the bottom
+            <div class="mb-2">
+                <p class="fw-bold">Comments: </p>
+                <div id="comments">
+                    <ul class="comment-list">
+                        <?php
+                        if (isset($commentsList) and is_array($commentsList)) :
+                            foreach ($commentsList as $comment) : ?>
+                                <li class="mb-1"><?php echo "<span class='fst-italic'>" . $comment['Author_Name'] . " (" . $comment['Comment_Date'] . ")</span>: " . $comment['Comment_Text']; ?></li>
+                        <?php endforeach;
+                        else: echo "<li>No comment found.</li>";
+                        endif; ?>
+                    </ul>
+                </div>
             </div>
-            <form method="post">
-                <textarea placeholder="Leave a comment..."></textarea>
-                <input type="submit" value="Add Comment">
+            
+
+            <form id="pictureComment" name="pictureComment" method="post">
+                <div class="form-group">
+                    <textarea name="commentArea" id="commentArea" rows="5" class="form-control mb-2" placeholder="Leave a comment..."></textarea>
+                    <span id="statusMsg" name="statusMsg" class="text-danger"><?php echo isset($commentError) ? $commentError : '' ?></span>
+                    <span class="text-success"><?php echo isset($commentSuccess) ? $commentSuccess : '' ?></span>
+                </div>
+                <input type="hidden" name="pictureId" id="pictureId" value="<?php echo isset($pictureId) ? $pictureId : ''; ?>">
+                <input class="btn btn-primary mt-2 w-100" type="submit" value="Add Comment">
             </form>
+            <?php endif; ?>
         </div>
     </div>
 </div>
-
-<script>
-    document.getElementById('albumselect').addEventListener('change', function() {
-        const albumId = this.value;
-
-        console.log(albumId);
-
-        fetch('get_album_data.php?album_id=123') // Example for your PHP scenario
-            .then(response => {
-                if (!response.ok) {
-                    console.error('Network response was not ok:', response.status, response.statusText);
-                    throw new Error('Server responded with an error.');
-                }
-                return response.text(); // Parse the response body as plain text
-            })
-            .then(textData => {
-                console.log('--- Text Data Result ---');
-                console.log(textData); // Dumps the plain text string
-                console.log('------------------------');
-
-                // If it's HTML, you might log it as HTML in the console
-                // console.log('HTML content:', textData);
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-            });
-    });
-</script>

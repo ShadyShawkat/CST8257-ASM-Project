@@ -1,10 +1,92 @@
 /* Custom CSS goes here */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
 
-a {
-    text-decoration: none;
+  scroll-behavior: smooth;
 }
 
-/* footer font size */
-footer {
-    font-size: .875em;
+main {
+  flex: 1;
+}
+
+a {
+  text-decoration: none;
+}
+
+
+#rCol form {
+  height: 20%;
+}
+
+#pictureMain {
+  border-radius: 8px;
+}
+
+#picturethumbs {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  max-height: 200px;
+  margin-top: 10px;
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
+}
+
+#picturethumbs ul {
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+#picturethumbs li {
+  display: inline;
+}
+
+.thumbnails {
+  border-radius: 5px;
+  margin: 5px;
+  height: 100px;
+  width: 100px;
+  max-height: 100px;
+  max-width: 100px;
+  object-fit: cover;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s ease;
+}
+
+.thumbnails:hover {
+  border-radius: 5px;
+  transform: scale(1.1);
+  object-fit: cover;
+}
+
+.selected-thumbnail {
+  border: 3px solid var(--bs-blue);
+}
+
+#comments {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  max-height: 400px;
+}
+
+.comment-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.comment-list li {
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+#commentArea {
+  resize: none;
+  height: auto;
 }

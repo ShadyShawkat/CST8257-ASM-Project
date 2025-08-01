@@ -2,7 +2,7 @@
 // uploadpictures.php
 // Handles picture uploads to albums
 
-// source: https://inspector.dev/ultimate-guide-to-php-file-upload-security/
+// reference: https://inspector.dev/ultimate-guide-to-php-file-upload-security/
 
 // Array for multiple upload is IS confusing. Here's how it is for multiple file uploads
 // [name] => Array
@@ -31,15 +31,12 @@
 //       [1] => 0
 //   )
 
-require_once './includes/functions.php';
-require_once './config/database.php';
+require_once BASE_PATH . '/includes/functions.php';
+require_once BASE_PATH . '/config/database.php';
+require_once BASE_PATH . '/globals.php';
 
 $userName = $_SESSION['loggedName'];
 $userId = trim($_SESSION['loggedID']);
-
-define('USER_UPLOADS_FOLDER', BASE_PATH . '/uploads/');
-
-$userFolder = USER_UPLOADS_FOLDER . $userId . '/';
 
 // Allowed image types
 $allowedTypes = array(
@@ -52,22 +49,41 @@ $allowedTypes = array(
 // Limit to 5MB
 $maxAllowedSize = 5 * 1024 * 1024;
 
-// Get accessibility options from the database.
-$selectOptions = getAccessibilityOptions();
+// Get albums from the database.
+$selectOptions = getAlbums($userId);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
-    var_dump($_POST);
-
     // Album name is required
-    if (isset($_POST['albumname']))
+    if (isset($_POST['album']))
     {
-        $albumName = $_POST['albumname'];
+        $albumId = $_POST['album'];
+        $albumFolder = UPLOADS_FOLDER . DIRECTORY_SEPARATOR . $userId . DIRECTORY_SEPARATOR . $albumId;
     }
     else
     {
-        // echo "Please select the album to save your picture/s into.";
+        $albumError = "Please select the album to save your picture/s into.";
     }
+
+    // Get title
+    if (isset($_POST['title']) and !empty($_POST['title']))
+    {
+        $cTitle = trim($_POST['title']);
+        $cTitle = htmlspecialchars($cTitle);
+    }
+
+    // Get description
+    if (isset($_POST['description']) and !empty($_POST['description']))
+    {
+        $cDescription = trim($_POST['description']);
+        $cDescription = htmlspecialchars($cDescription);
+    }
+    // If no title was provided, set it blank.
+    else
+    {
+        $cDescription = "";
+    }
+
 
     // Check if at least one file is included
     $filesIncluded = false;
@@ -78,10 +94,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             $filesIncluded = true;
             break;
         }
+        else
+        {
+            $noFile = "No file(s) selected.";
+        }
     }
 
     // Loop through chosen images
-    if ($filesIncluded === true)
+    if (isset($albumId) and $filesIncluded === true)
     {
         $files = $_FILES['picturefiles'];
         $fileNames = $files['name'];
@@ -121,8 +141,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
                 continue;
             }
 
-            var_dump($fileSizes[$key]);
-
             // Check filesize
             if (getimagesize($fileTempNames[$key]) === false)
             {
@@ -149,8 +167,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             // File is valid
             elseif ($fileErrors[$key] === UPLOAD_ERR_OK)
             {
+                $file = $fileTempNames[$key];
+
                 // Check if file already exists
-                if (file_exists($userFolder . $currentFile))
+                if (file_exists($albumFolder . DIRECTORY_SEPARATOR . $currentFile))
                 {
                     array_push($errorMessages, $msgFirstPart . " File already exists.");
                     continue;
@@ -158,6 +178,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
                 // All is good. Upload
                 else
                 {
+                    // If title is not provided, use the first valid file's filename
+                    if (!isset($cTitle) or empty($cTitle))
+                    {
+                        $cTitle = trim($currentFile);
+                        $cTitle = htmlspecialchars($cTitle);
+                    }
+
+                    // Upload the actual file
+                    move_uploaded_file($file, $albumFolder . DIRECTORY_SEPARATOR . $currentFile);
+
+                    // Add a record to the database
+                    addPictures($albumId, $currentFile, $cTitle, $cDescription);
+                    // echo $cTitle;
+
                     $uploadCount += 1;
                 }
             }
@@ -191,7 +225,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     <?php endif; ?>
 
     <?php if (isset($uploadCount) and $uploadCount > 0) : ?>
-
         <div class="container" name="successContainer">
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <p style="margin:0;"><?php
@@ -206,31 +239,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 
     <form name="uploadpictures" id="uploadpictures" method="post" enctype="multipart/form-data">
         <div class="form-group row mb-2">
-            <label class="form-label col-sm-3" for="albumname">Upload to Album : </label>
-            <select class="form-select col-sm" name="albumname" id="albumname">
-                <option selected disabled hidden>Choose Album...</option>
-                <?php
-                foreach ($selectOptions as $option)
-                {
-                    echo '<option value="' . $option['Accessibility_Code'] . '"> ' . $option['Description'] . '</option>';
-                }
-                ?>
-            </select>
+            <div class="col col-sm-2">
+                <label class="form-label" for="album">Upload to Album : </label>
+            </div>
+            <div class="col col-sm">
+                <select class="form-select col-sm" name="album" id="album">
+                    <option selected disabled hidden>Choose Album...</option>
+                    <?php
+                    foreach ($selectOptions as $option)
+                    {
+                        echo '<option value="' . $option['Album_Id'] . '"> ' . $option['Title'] . '</option>';
+                    }
+                    ?>
+                </select>
+                <span class="text-danger"><?php echo isset($albumError) ? $albumError : '' ?></span>
+            </div>
+        </div>
+
+        <div class="form-group row mb-2">
+            <div class="col col-sm-2">
+                <label class="form-label" for="picturefile">File(s) to Upload : </label>
+            </div>
+            <div class="col col-sm">
+                <input type="file" class="form-control" name="picturefiles[]" id='picturefiles' multiple>
+                <span class="text-danger"><?php echo isset($noFile) ? $noFile : '' ?></span>
+            </div>
         </div>
         <div class="form-group row mb-2">
-            <label class="form-label col-sm-3" for="picturefile">File to Upload : </label>
-            <input type="file" class="form-control col-sm" name="picturefiles[]" id='picturefiles' multiple>
+            <div class="col col-sm-2">
+                <label class="form-label" for="title">Title : </label>
+            </div>
+            <div class="col col-sm">
+                <input class="form-control" type="text" name="title" id="title">
+            </div>
         </div>
         <div class="form-group row mb-2">
-            <label class="form-label col-sm-3" for="title">Title : </label>
-            <input class="form-control col-sm" type="text" name="title" id="title">
-        </div>
-        <div class="form-group row mb-2">
-            <label class="form-label col-sm-3" for="description">Description : </label>
-            <textarea class="form-control col-sm" name="description" id="description" maxlength="3000"></textarea>
+            <div class="col col-sm-2">
+                <label class="form-label" for="description">Description : </label>
+            </div>
+            <div class="col col-sm">
+                <textarea class="form-control col-sm" name="description" id="description" maxlength="3000"></textarea>
+            </div>
         </div>
         <div class="form-group row">
-            <div class="col-sm-3"></div>
+            <div class="col-sm-2"></div>
             <div class="col-sm">
                 <input class="btn btn-primary col-sm-5" type="submit" value="Submit">
                 <input class="btn btn-secondary col-sm-5" type="reset" value="Clear">

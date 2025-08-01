@@ -2,8 +2,7 @@
 // index.php
 // Main entry point
 
-// Define base path for includes to avoid issues with different levels
-define('BASE_PATH', __DIR__);
+require_once 'globals.php';
 
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $trimmedUri = trim($requestUri, '/');
@@ -11,15 +10,17 @@ $splitUri = explode('/', $trimmedUri);
 
 $page = end($splitUri);
 
-// To check check the routing
+// If you want to check the routing, uncomment the echoes below.
 // echo "ROOT FOLDER : ".BASE_PATH  . "<br>";
 // echo "RAW REQUEST URI : ". $_SERVER["REQUEST_URI"] . "<br>";
 // echo "PARSED REQUEST URI : ". $requestUri . "<br>";
 // echo "SCRIPT NAME : ".  $_SERVER['SCRIPT_NAME'] . "<br>";
 // echo "PAGE : " . $page;
 
-$rootAliases = ["", "/", "home", "index"];
+// Main view page
+$rootAliases = ["", "/", "home", "index", trim(BASE_URL, '/')];
 
+// Pages that need the header, menu, and footer
 $regularPages = [
     "myfriends" => "My Friends",
     "myalbums" => "My Albums",
@@ -27,8 +28,10 @@ $regularPages = [
     "uploadpictures" => "Upload Pictures",
     "addalbum" => "Add Album",
     "addfriend" => "Add Friend",
+    "friendspicture" => "Friend's Pictures"
 ];
 
+// Pages that need the header, and footer
 $specialPages = [
     "login" => "Log In",
     "logout" => "Log Out",
@@ -39,11 +42,10 @@ $specialPages = [
 $allRoutablePages = array_merge($regularPages, $specialPages);
 
 // Handle routing for the hompage
-if ($page === "" || $page === 'index' || $page === 'home' || $page === 'asm')
+if (in_array($page, $rootAliases))
 {
     unset($pageTitle);
-    $body = BASE_PATH . '/views/home.php';
-
+    $body = BASE_PATH . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'home.php';
 }
 else
 {
@@ -51,7 +53,8 @@ else
     if (array_key_exists($page, $allRoutablePages))
     {
         $pageTitle = $allRoutablePages[$page];
-        $body = BASE_PATH . '/views/' . $page . '.php';
+        $_SESSION['page'] = $page;
+        $body = BASE_PATH . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR  . $page . '.php';
     }
     else
     {
