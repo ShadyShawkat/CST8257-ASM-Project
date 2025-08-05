@@ -4,7 +4,7 @@ require_once './includes/functions.php';
 require_once './config/database.php';
 
 if (!isset($_SESSION['loggedID'])) {
-    displayError("You must be logged in to send a friend request.");
+    displayMessage("You must be logged in to send a friend request.");
     exit;
 }
 
@@ -80,13 +80,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['friendUserId'])) {
 }
 ?>
 
-<h2>Add a Friend</h2>
-<form method="POST" action="">
-    <label for="friendUserId">Enter Friend's User ID:</label><br>
-    <input type="text" name="friendUserId" id="friendUserId" required><br><br>
-    <input type="submit" value="Send Friend Request">
-</form>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body bg-light">
+                    <h3 class="card-title text-center">Add Friend</h3>
+                    <p class="text-center">
+                        Welcome <strong><?= htmlspecialchars($_SESSION['loggedName']) ?></strong>!
+                        (not you? <a href="logout.php">change user here</a>)
+                    </p>
 
-<?php if ($message): ?>
-    <p style="margin-top: 10px; color: #333;"><?php echo htmlspecialchars($message); ?></p>
-<?php endif; ?>
+                    <?php if ($message): ?>
+                        <div class="mt-3 <?= $feedbackClass ?>">
+                            <?= $message ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <form method="POST" class="mt-4">
+                        <div class="form-group">
+                            <label for="friendUserId">ID:</label>
+                            <input type="text" class="form-control" id="friendUserId" name="friendUserId" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Send Friend Request</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

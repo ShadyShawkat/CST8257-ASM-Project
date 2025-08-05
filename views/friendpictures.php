@@ -46,7 +46,7 @@ if ($albums) {
         $pictureId = $picturesList[0]['Picture_Id'];
         $pictureTitle = $picturesList[0]['Title'];
         $pictureDescription = $picturesList[0]['Description'];
-        $mainImage = '..' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $friendId . DIRECTORY_SEPARATOR . $picturesList[0]['Album_Id'] . DIRECTORY_SEPARATOR . $picturesList[0]['FileName'];
+        $mainImage = '.' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $friendId . DIRECTORY_SEPARATOR . $picturesList[0]['Album_Id'] . DIRECTORY_SEPARATOR . $picturesList[0]['FileName'];
         $commentsList = getComments($pictureId);
     }
 } else {
@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="row">
                     <ul>
                         <?php foreach ($picturesList as $picture): 
-                            $thumbPath = '..' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $friendId . DIRECTORY_SEPARATOR . $picture['Album_Id'] . DIRECTORY_SEPARATOR . $picture['FileName'];
+                            $thumbPath = '.' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $friendId . DIRECTORY_SEPARATOR . $picture['Album_Id'] . DIRECTORY_SEPARATOR . $picture['FileName'];
                         ?>
                             <li>
                                 <img class="thumbnails" id="<?php echo $picture['Picture_Id'] ?>" src="<?php echo $thumbPath ?>" data-fullsize="<?php echo $thumbPath ?>">

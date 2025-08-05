@@ -63,6 +63,9 @@ function logIn($userName, $password)
                     $_SESSION['loggedIn'] = true;
 
                     session_regenerate_id(true);
+
+                    header("Location: home"); // or whatever main page you want
+                    exit();
                 }
                 else
                 {

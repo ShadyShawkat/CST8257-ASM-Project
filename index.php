@@ -69,6 +69,13 @@ else
 // Add the header
 include_once BASE_PATH . '/includes/header.php';
 
+if (!isset($_SESSION['loggedIn'])) {
+    if (!in_array($page, $rootAliases) && !in_array($page, array_keys($specialPages))) {
+        header("Location: index");
+        exit();
+    }
+}
+
 // Add the menu if its in any of the homepage alias or the regular pages
 if (in_array($page, $rootAliases) or array_key_exists($page, $regularPages))
 {
@@ -87,7 +94,9 @@ else
     header("HTTP/1.0 404 Not Found");
     $pageTitle = "Page Not Found";
     include_once BASE_PATH . '/404.php'; // Fallback to 404 if view is missing
+    
+    // Add the footer
+    include_once BASE_PATH . '/includes/footer.php';
+    
 }
 
-// Add the footer
-include_once BASE_PATH . '/includes/footer.php';

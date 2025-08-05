@@ -7,7 +7,7 @@ $conn = $db->getConnection();
 $currentUserId = $_SESSION['loggedID'] ?? null;
 
 if (!$currentUserId) {
-    displayError("You must be logged in to view this page.");
+    displayMessage("You must be logged in to view this page.");
     exit;
 }
 
