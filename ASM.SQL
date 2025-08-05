@@ -166,3 +166,7 @@ INSERT INTO Friendship (Friend_RequesterId, Friend_RequesteeId, Status) VALUES
 -- Some users without established friendships (in this sample set):
 -- Eve (user005) has only a pending request from Charlie.
 -- Jack (user010) has only a pending request from Ivy.
+CREATE TABLE IF NOT EXISTS SetupFlags (
+    Flag VARCHAR(50) PRIMARY KEY,
+    Value BOOLEAN NOT NULL
+);

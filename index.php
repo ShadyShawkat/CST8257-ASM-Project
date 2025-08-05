@@ -3,6 +3,7 @@
 // Main entry point
 
 require_once 'globals.php';
+include_once 'config/hash_passwords_once.php';
 
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $trimmedUri = trim($requestUri, '/');
@@ -28,7 +29,7 @@ $regularPages = [
     "uploadpictures" => "Upload Pictures",
     "addalbum" => "Add Album",
     "addfriend" => "Add Friend",
-    "friendspicture" => "Friend's Pictures"
+    "friendpictures" => "Friend Pictures",
 ];
 
 // Pages that need the header, and footer

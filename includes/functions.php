@@ -54,6 +54,8 @@ function logIn($userName, $password)
             // User found
             if ($user)
             {
+                echo password_hash($password, PASSWORD_DEFAULT);
+                echo "<br>" . $user['Password'];
                 if (password_verify($password, $user['Password']))
                 {
                     $_SESSION['loggedID'] = $user['UserID'];
@@ -288,6 +290,10 @@ function addAlbum(string $ownerId, string $title, ?string $description, string $
         // Album created
         if ($newAlbum)
         {
+            //check if the uploads folder exists, if not create it
+            if (!is_dir(UPLOADS_FOLDER . "/$ownerId")) {
+                mkdir(UPLOADS_FOLDER . '/' . $ownerId);
+            }
             mkdir(UPLOADS_FOLDER . "/$ownerId/$newAlbumId");
             return $newAlbum;
         }
@@ -544,12 +550,13 @@ function getComments(string $pictureId)
         }
         else
         {
-            return "No comment found.";
+            return [];
         }
     }
     catch (PDOException $e)
     {
         displayMessage($e->getMessage());
+        return [];
     }
 }
 
@@ -576,3 +583,22 @@ function addComment(string $authorId, string $pictureId, string $comment)
         displayMessage($e->getMessage());
     }
 }
+
+function getSharedAlbums($userId)
+{
+    require_once BASE_PATH . '/config/database.php';
+
+    try {
+        $sql = 'SELECT Album.Album_Id, Album.Title, Album.Date_Updated
+                FROM Album
+                WHERE Owner_Id = ? AND Accessibility_Code = "shared"
+                ORDER BY Album.Date_Updated DESC';
+
+        $db = Database::getInstance();
+        $albums = $db->run($sql, [$userId])->fetchAll(PDO::FETCH_ASSOC);
+        return $albums ?: [];
+    } catch (PDOException $e) {
+        displayMessage($e->getMessage());
+    }
+}
+

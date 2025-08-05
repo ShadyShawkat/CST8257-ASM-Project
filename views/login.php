@@ -17,12 +17,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             $userid = htmlspecialchars($_POST["userid"]);
             $password = $_POST["password"];
 
-            // logIn('user001', 'pass123');
-            $result = logIn($userid, $password);
-            
-            if($result) {
-                $loginError = $result;
-            }
+    logIn($userid, $password);
+    // logIn('user001', 'pass123');
+    // logIn('user007', 'pass404');
+    // logIn($userid, $password);
 
             if (isset($_SESSION['loggedIn'])) $loggedInFlag = $_SESSION['loggedIn'];
             if (isset($loggedInFlag) and $loggedInFlag === true) header('Location: index');
