@@ -12,8 +12,8 @@ require_once BASE_PATH . '/includes/functions.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Gamaliel Cabana">
-    <meta name="email" content="90541124989@algonquincdistudent.ca">
+    <meta name="author" content="Gamaliel Cabana (90541124989@algonquincdistudent.ca), Shady Boles (90541141974@algonquincdistudent.ca)">
+    <meta name="email" content="">
 
     <title><?php echo isset($pageTitle) ? 'Algonquin Social Media - ' . htmlspecialchars($pageTitle) : 'Algonquin Social Media'; ?></title>
 
