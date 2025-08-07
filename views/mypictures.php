@@ -10,6 +10,7 @@ $userId = trim($_SESSION['loggedID']);
 
 $commentError = "";
 $commentSuccess = "";
+$commentList = "";
 
 // placeholder image
 $placeholder = BASE_URL . 'assets' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'Placeholder.svg';
@@ -54,7 +55,6 @@ if (isset($albums) and !is_null($albums))
     if (is_array($picturesList))
     {
         // var_dump($picturesList);
-
         $pictureId = $picturesList[0]['Picture_Id'];
         $pictureTitle = $picturesList[0]['Title'];
         $pictureDescription = $picturesList[0]['Description'];
@@ -94,12 +94,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     <div class="row">
         <div class="col-8">
             <form name="picturedropdown" id="picturedropdown" method="get">
-                <select class="form-select col-sm" name="albumselect" id="albumselect">
-                    <?php
-                    if (isset($albums) and !is_null($albums))
-                    {
+                <?php if (isset($albums) and !is_null($albums)): ?>
+                    <select class="form-select col-sm" name="albumselect" id="albumselect">
+                        <?php
                         $firstOption = true;
-
                         foreach ($selectOptions as $value => $option)
                         {
                             if ((isset($_GET['albumId']) and $_GET['albumId'] == $value) or $firstOption === true)
@@ -113,13 +111,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                             }
                             echo '<option value="' . $value . '" ' . $selected . '> ' . $option . '</option>';
                         }
-                    }
-                    else
-                    {
-                        echo "<option hidden disabled selected>No albums found</option>";
-                    }
-                    ?>
-                </select>
+                        ?>
+                    </select>
+                <?php else: ?>
+                    <div>No albums found. To create an album go <a href="addalbum">here</a>.</div>
+                <?php endif; ?>
             </form>
             <h3 class="h3 text-center my-2" name="picturetitle" id="picturetitle"><?php echo isset($pictureTitle) ? $pictureTitle : " "; ?></h3>
         </div>
@@ -130,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                 <div class="row" id="pictureMain" name="pictureMain">
                     <img id="mainImage" src="<?php echo isset($mainImage) ? $mainImage : $placeholder; ?>" data-id="<?php echo isset($pictureId) ? $pictureId : ''; ?>">
                 </div>
-                <div class="row" id="picturethumbs" name="picturethumbs">
+                <div class="row thumbnail-container" id="picturethumbs" name="picturethumbs">
                     <ul>
                         <?php if (isset($picturesList) and is_array($picturesList)) :
                             foreach ($picturesList as $picture) :
@@ -146,37 +142,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 
         <div class="col-4" id="rCol" name="rCol">
             <?php if (isset($albums) and !is_null($albums)): ?>
-            <div class="mb-2">
-                <p class="fw-bold">Description: </p>
-                <div id="pictureDescription">
-                    <p><?php echo (isset($pictureDescription) and !empty($pictureDescription)) ? $pictureDescription : "No description set."; ?></p>
+                <div class="mb-2">
+                    <p class="fw-bold">Description: </p>
+                    <div id="pictureDescription">
+                        <p><?php echo (isset($pictureDescription) and !empty($pictureDescription)) ? $pictureDescription : "No description set."; ?></p>
+                    </div>
                 </div>
-            </div>
-            <div class="mb-2">
-                <p class="fw-bold">Comments: </p>
-                <div id="comments">
-                    <ul class="comment-list">
-                        <?php
-                        if (isset($commentsList) and is_array($commentsList)) :
-                            foreach ($commentsList as $comment) : ?>
-                                <li class="mb-1"><?php echo "<span class='fst-italic'>" . $comment['Author_Name'] . " (" . $comment['Comment_Date'] . ")</span>: " . $comment['Comment_Text']; ?></li>
-                        <?php endforeach;
-                        else: echo "<li>No comment found.</li>";
-                        endif; ?>
-                    </ul>
+                <div class="mb-2">
+                    <p class="fw-bold">Comments: </p>
+                    <div id="comments">
+                        <ul class="comment-list">
+                            <?php
+                            // var_dump($commentsList);
+                            if (isset($commentsList) and is_array($commentsList) and !empty($commentsList)) :
+                                foreach ($commentsList as $comment) : ?>
+                                    <li class="mb-1"><?php echo "<span class='fst-italic'>" . $comment['Author_Name'] . " (" . $comment['Comment_Date'] . ")</span>: " . $comment['Comment_Text']; ?></li>
+                            <?php endforeach;
+                            else: echo "<li>No comment found.</li>";
+                            endif; ?>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-            
 
-            <form id="pictureComment" name="pictureComment" method="post">
-                <div class="form-group">
-                    <textarea name="commentArea" id="commentArea" rows="5" class="form-control mb-2" placeholder="Leave a comment..."></textarea>
-                    <span id="statusMsg" name="statusMsg" class="text-danger"><?php echo isset($commentError) ? $commentError : '' ?></span>
-                    <span class="text-success"><?php echo isset($commentSuccess) ? $commentSuccess : '' ?></span>
-                </div>
-                <input type="hidden" name="pictureId" id="pictureId" value="<?php echo isset($pictureId) ? $pictureId : ''; ?>">
-                <input class="btn btn-primary mt-2 w-100" type="submit" value="Add Comment">
-            </form>
+                <form id="pictureComment" name="pictureComment" method="post">
+                    <div class="form-group">
+                        <textarea name="commentArea" id="commentArea" rows="5" class="form-control mb-2" placeholder="Leave a comment..."></textarea>
+                        <span id="statusMsg" name="statusMsg" class="text-danger"><?php echo isset($commentError) ? $commentError : '' ?></span>
+                        <span class="text-success"><?php echo isset($commentSuccess) ? $commentSuccess : '' ?></span>
+                    </div>
+                    <input type="hidden" name="pictureId" id="pictureId" value="<?php echo isset($pictureId) ? $pictureId : ''; ?>">
+                    <input class="btn btn-primary mt-2 w-100" type="submit" value="Add Comment">
+                </form>
             <?php endif; ?>
         </div>
     </div>

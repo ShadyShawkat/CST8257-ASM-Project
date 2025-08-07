@@ -3,7 +3,7 @@
 // Main entry point
 
 require_once 'globals.php';
-include_once 'config/hash_passwords_once.php';
+// include_once 'config/hash_passwords_once.php';
 
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $trimmedUri = trim($requestUri, '/');
@@ -69,8 +69,10 @@ else
 // Add the header
 include_once BASE_PATH . '/includes/header.php';
 
-if (!isset($_SESSION['loggedIn'])) {
-    if (!in_array($page, $rootAliases) && !in_array($page, array_keys($specialPages))) {
+if (!isset($_SESSION['loggedIn']))
+{
+    if (!in_array($page, $rootAliases) && !in_array($page, array_keys($specialPages)))
+    {
         header("Location: index");
         exit();
     }
@@ -94,9 +96,7 @@ else
     header("HTTP/1.0 404 Not Found");
     $pageTitle = "Page Not Found";
     include_once BASE_PATH . '/404.php'; // Fallback to 404 if view is missing
-    
-    // Add the footer
-    include_once BASE_PATH . '/includes/footer.php';
-    
 }
 
+// Add the footer
+include_once BASE_PATH . '/includes/footer.php';

@@ -34,13 +34,3 @@ On this project, we are assuming that the entire website is put in its folder in
 ## DATABASE SETUP: ##
 
 I included an SQL file (ASM.SQL) to create the schema and some sample data. You can use your preferred SQL editor to take a look, modify, and run it.
-
-## TODO: ##
-
-List of things that we still need to do.
-- [ ] Error validation. Sitewide.
-- [X] Footer overlaps with the content when browser is resized.
-- [ ] Need to retain values when form is submitted and value is valid.
-- [ ] Update the album modified date whena picture is added.
-- [X] Find out why rendered footer elements are messed up.
-- [ ] Footer needs to stay at bottom. Not fixed

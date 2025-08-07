@@ -68,7 +68,7 @@ CREATE TABLE Friendship (
 );
 
 ---
-## Sample Data Insertion
+--- ## Sample Data Insertion
 
 -- Insert data into Accessibility
 INSERT INTO Accessibility (Accessibility_Code, Description) VALUES
@@ -126,7 +126,6 @@ INSERT INTO Comment (Author_Id, Picture_Id, Comment_Text) VALUES
 ('user007', 10, 'Incredible energy, Harry!');
 
 -- Insert data into FriendshipStatus
--- Removed 'blocked' as requested
 INSERT INTO FriendshipStatus (Status_Code, Description) VALUES
 ('pending', 'Friend request sent, waiting for acceptance'),
 ('accepted', 'Friends');

@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
                         <label class="form-label" for="name">Name : </label>
                     </div>
                     <div class="col-sm">
-                        <input class="form-control" type="text" name="name" id="name">
+                        <input class="form-control" type="text" name="name" id="name" value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>">
                         <span class="text-danger"><?php echo isset($name['error']) ? $name['error'] : '' ?></span>
                     </div>
                 </div>
@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
                     <div class="col-sm-3">
                         <label class="form-label" for="userid">Phone Number : </label>
                     </div>
-                    <div class="col-sm"><input class="form-control col-sm" type="tel" name="phone" id="phone">
+                    <div class="col-sm"><input class="form-control col-sm" type="tel" name="phone" id="phone" value="<?php echo htmlspecialchars($_POST['phone'] ?? ''); ?>">
                         <span class="text-danger"><?php echo isset($phone['error']) ? $phone['error'] : '' ?></span>
                     </div>
                 </div>

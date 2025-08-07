@@ -56,7 +56,7 @@ if (document.querySelector("form #albumselect")) {
   const albumSelect = document.querySelector("form #albumselect");
   albumSelect.addEventListener("change", () => {
     const pictureTitle = document.querySelector("h3#picturetitle");
-    const thumbContainer = document.querySelector("#picturethumbs");
+    const thumbContainer = document.querySelector(".thumbnail-container");
     const mainImage = document.querySelector("#mainImage");
     const pictureDescription = document.querySelector("#pictureDescription p");
     const pictureId = document.querySelector("#pictureId");
@@ -88,7 +88,7 @@ if (document.querySelector("form #albumselect")) {
       .then((data) => {
         const userId = data.userId;
 
-        console.log(data);
+        // console.log(data);
 
         if (data.status == "success" && Array.isArray(data.pictureList)) {
           const firstPicture = data.pictureList[0];
@@ -135,7 +135,7 @@ if (document.querySelector("form #albumselect")) {
   });
 
   // Listener for clicks on the thumbnails in mypicture.php
-  document.querySelector("#picturethumbs").addEventListener("click", (event) => {
+  document.querySelector(".thumbnail-container").addEventListener("click", (event) => {
       if (event.target.matches(".thumbnails")) {
         const mainImage = document.querySelector("#mainImage");
         const pictureId = document.querySelector("#pictureId");
@@ -181,7 +181,7 @@ function getComments(pictureId) {
       const commentList = document.querySelector(".comment-list");
 
       // Clear the comments
-      commentList.innerHTML = "";
+      commentList.innerHTML = "No comment found.";
 
       // Load the comments
       if (data.status == "success" && Array.isArray(data.commentsList)) {
@@ -331,7 +331,7 @@ function displayMessage(message, title = "ERROR", type = "error") {
   // Create the alert div element
   const alertDiv = document.createElement("div");
   alertDiv.className = `m-2 alert ${alertClass} alert-dismissible fade show`;
-  alertDiv.setAttribute("id", "alertMessage"); // Consider making this ID dynamic if multiple alerts can be shown
+  alertDiv.setAttribute("id", "alertMessage");
   alertDiv.setAttribute("role", "alert");
 
   // Populate the inner HTML

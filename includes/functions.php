@@ -54,8 +54,8 @@ function logIn($userName, $password)
             // User found
             if ($user)
             {
-                echo password_hash($password, PASSWORD_DEFAULT);
-                echo "<br>" . $user['Password'];
+                // echo password_hash($password, PASSWORD_DEFAULT);
+                // echo "<br>" . $user['Password'];
                 if (password_verify($password, $user['Password']))
                 {
                     $_SESSION['loggedID'] = $user['UserID'];

@@ -75,7 +75,7 @@ if (isset($albums) and !is_null($albums))
     ?>
 
     <form method="post" id="albumList">
-        <table class="table">
+        <table class="table table-hover">
             <thead>
                 <th>Title</th>
                 <th>Date Updated</th>

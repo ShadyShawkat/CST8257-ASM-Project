@@ -26,7 +26,7 @@ a {
   border-radius: 8px;
 }
 
-#picturethumbs {
+#picturethumbs, .thumbnail-container {
   overflow-x: scroll;
   overflow-y: hidden;
   max-height: 200px;
@@ -35,7 +35,7 @@ a {
   scroll-behavior: smooth;
 }
 
-#picturethumbs ul {
+#picturethumbs ul, .thumbnail-container ul {
   display: flex;
   flex-direction: row;
   padding: 0;
@@ -43,7 +43,7 @@ a {
   list-style: none;
 }
 
-#picturethumbs li {
+#picturethumbs li, .thumbnail-container li {
   display: inline;
 }
 

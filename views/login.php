@@ -17,12 +17,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             $userid = htmlspecialchars($_POST["userid"]);
             $password = $_POST["password"];
 
-    logIn($userid, $password);
-    // logIn('user001', 'pass123');
-    // logIn('user007', 'pass404');
-    // logIn($userid, $password);
+            $response =  logIn($userid, $password);
+            // logIn('user001', 'pass123');
+            // logIn('user007', 'pass404');
+            // logIn($userid, $password);
 
-            if (isset($_SESSION['loggedIn'])) $loggedInFlag = $_SESSION['loggedIn'];
+            isset($_SESSION['loggedIn']) ? $loggedInFlag = $_SESSION['loggedIn'] : $loginError = $response;
             if (isset($loggedInFlag) and $loggedInFlag === true) header('Location: index');
         }
         else
@@ -30,7 +30,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             $loginError = "Username and password required.";
         }
     }
-    elseif (strtolower($_POST['submit']) === strtolower('submit')) {
+    elseif (strtolower($_POST['submit']) === strtolower('submit'))
+    {
         $_POST = "";
         $loginError = "";
     }

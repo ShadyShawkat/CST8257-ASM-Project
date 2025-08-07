@@ -49,7 +49,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         $description = "";
     }
 
-
     if ($errFound === 0)
     {
         $result = addAlbum($userId, $title, $description, $accessibility);
